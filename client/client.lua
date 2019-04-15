@@ -2,7 +2,7 @@ package.cpath = package.cpath .. ";../3rd/skynet/luaclib/?.so;../server/luaclib/
 package.path = package.path .. ";../3rd/skynet/lualib/?.lua;../common/?.lua"
 
 local print_r = require "print_r"
-local socket = require "clientsocket"
+local socket = require "client.socket"
 local sproto = require "sproto"
 local srp = require "srp"
 local aes = require "aes"
