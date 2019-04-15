@@ -15,7 +15,7 @@ SKYNET_BUILD_PATH ?= .
 LUA_CLIB_PATH ?= luaclib
 MCSERVICE_PATH ?= cservice
 
-CFLAGS = -g -O2 -Wall -I$(LUA_INC) $(MYCFLAGS) 
+CFLAGS = -g -O2 -Wall -I$(LUA_INC) $(MYCFLAGS) -std=gnu99 -pthread
 
 # lua
 
