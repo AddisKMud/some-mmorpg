@@ -1,8 +1,8 @@
 #!/bin/bash
 
-for i in `seq 0 32`
+for i in `seq 0 1`
 do
-	PORT=$(($i + 6379))
+	PORT=$(($i + 6401))
 	redis-cli -p ${PORT} shutdown
 	cd ..
 done

@@ -2,7 +2,7 @@
 
 BASEDIR="${PWD}/$(dirname $0)"
 
-for i in `seq 0 32`
+for i in `seq 0 1`
 do
 	NAME="redis${i}"
 	DIR="${BASEDIR}/${NAME}"
