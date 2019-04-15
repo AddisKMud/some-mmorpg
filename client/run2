@@ -1,4 +1,4 @@
 #!/bin/bash
 
-lua client.lua asdfasdf
+../3rd/skynet/3rd/lua/lua client.lua zdtest1
 
