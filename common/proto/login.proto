@@ -1,0 +1,46 @@
+syntax = "proto2";
+
+message c2s_handshake
+{
+    optional string name = 1;
+    optional string client_pub = 2;
+}
+
+message s2c_handshake
+{
+    optional bool user_exists = 1;
+    optional string salt = 2;
+    optional string server_pub = 3;
+    optional string challenge = 4;
+}
+
+message c2s_auth
+{
+    optional string challenge = 1;
+    optional string password = 2;
+}
+
+message s2c_auth
+{
+    optional int64 session = 1;
+    optional int64 expire = 2;
+    optional string challenge = 3;
+}
+
+message c2s_challenge
+{
+    optional int64 session = 1;
+    optional string challenge = 2;
+}
+
+message s2c_challenge
+{
+    optional string token = 1;
+    optional string challenge = 2;
+}
+
+message c2s_login
+{
+    optional int64 session = 1;
+    optional string token = 2;
+}

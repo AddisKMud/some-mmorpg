@@ -1,0 +1,185 @@
+syntax = "proto2";
+
+message general
+{
+    optional string name = 1;
+    optional string race = 2;
+    optional string class = 3;
+    optional string map = 4;
+}
+
+message position
+{
+    optional int32 x = 1;
+    optional int32 y = 2;
+    optional int32 z = 3;
+    optional int32 o = 4;
+}
+
+message movement
+{
+    optional position pos = 1;
+}
+
+message attribute
+{
+    optional int32 health = 1;
+    optional int32 level = 2;
+    optional int32 exp = 3;
+    optional int32 health_max = 4;
+    optional int32 strength = 5;
+    optional int32 stamina = 6;
+    optional int32 attack_power = 7;
+}
+
+message attribute_overview
+{
+    optional int32 level = 1;
+}
+
+message attribute_aoi
+{
+    optional int32 level = 1;
+    optional int32 health = 2;
+    optional int32 health_max = 3;
+}
+
+message character
+{
+    optional int64 id = 1;
+    optional general general = 2;
+    optional attribute attribute = 3;
+    optional movement movement = 4;
+}
+
+message character_agent
+{
+    optional int64 id = 1;
+    optional general general = 2;
+    optional attribute attribute = 3;
+    optional movement movement = 4;
+}
+
+message character_overview
+{
+    optional int64 id = 1;
+    optional general general = 2;
+    optional attribute_overview attribute = 3;
+}
+
+message character_aoi
+{
+    optional int64 id = 1;
+    optional general general = 2;
+    optional attribute_aoi attribute = 3;
+    optional movement movement = 4;
+}
+
+message character_aoi_move
+{
+    optional int64 id = 1;
+    optional movement movement = 2;
+}
+
+message character_aoi_attribute
+{
+    optional int64 id = 1;
+    optional attribute_aoi attribute = 2;
+}
+
+//opt
+message c2s_character_list
+{
+}
+
+message s2c_character_list
+{
+    repeated character_overview character = 1;
+}
+
+message c2s_character_create
+{
+    optional general character = 1;
+}
+
+message s2c_character_create
+{
+    optional character_overview character = 1;
+    optional int32 errno = 2;
+}
+
+message c2s_character_pick
+{
+    optional int64 id = 1;
+}
+
+message s2c_character_pick
+{
+    optional character character = 1;
+    optional int32 errno = 2;
+}
+
+message c2s_map_ready
+{
+}
+
+message s2c_map_ready
+{
+}
+
+message c2s_move
+{
+    optional position pos = 1;
+}
+
+message s2c_move
+{
+    optional position pos = 1;
+}
+
+message c2s_combat
+{
+    optional int64 target = 1;
+}
+
+message s2c_combat
+{
+    optional int64 target = 1;
+    optional int32 damage = 2;
+}
+
+//
+message c2s_aoi_add
+{
+    optional bool wantmore = 1;
+}
+
+message s2c_aoi_add
+{
+    optional character_aoi character = 1;
+}
+
+message s2c_aoi_remove
+{
+    optional int64 character = 1;
+}
+
+message c2s_aoi_update_move
+{
+    optional bool wantmore = 1;
+}
+
+message s2c_aoi_update_move
+{
+    optional character_aoi_move character = 1;
+}
+
+message c2s_aoi_update_attribute
+{
+    optional bool wantmore = 1;
+}
+
+message s2c_aoi_update_attribute
+{
+    optional character_aoi_attribute character = 1;
+}

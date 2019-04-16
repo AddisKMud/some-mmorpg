@@ -9,6 +9,9 @@ skynet.start(function()
 	skynet.newservice ("protod")
 	skynet.uniqueservice ("database")
 
+    local pbc = skynet.newservice("pbc")
+    skynet.call(pbc, "lua", "test")
+
 	local loginserver = skynet.newservice ("loginserver")
 	skynet.call (loginserver, "lua", "open", login_config)	
 
