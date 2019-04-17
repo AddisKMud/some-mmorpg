@@ -6,6 +6,7 @@ local protobuf = require "protobuf"
 local pb_files = {
     "../common/proto/login.pb",
     "../common/proto/game.pb",
+    "../common/proto/HotfixMessage.pb",
 }
 
 local function init()
@@ -77,6 +78,16 @@ function cmd.test()
 
     skynet.error("decode")
     de_msg = cmd.decode("c2s_character_list", data)
+    utils.print(de_msg)
+
+    skynet.error("pbc test 3------")
+    msg = {Account = "guajiuser1", Password = "123456789", Channel = "yyb"}
+    utils.print("msg = ",msg)
+    skynet.error("encode")
+    data = cmd.encode("C2R_LoginRequest_10001", msg)
+    skynet.error("decode "..#(data))
+    de_msg = cmd.decode("C2R_LoginRequest_10001", data)
+    --skynet.error(de_msg.name, de_msg.client_pub)
     utils.print(de_msg)
 end
 
