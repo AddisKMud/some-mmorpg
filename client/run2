@@ -1,4 +1,4 @@
 #!/bin/bash
 
-../3rd/skynet/3rd/lua/lua client.lua zdtest1
+../3rd/skynet/3rd/lua/lua client.lua zdtest1 123456 yyb_android yyb
 
