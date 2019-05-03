@@ -45,6 +45,7 @@ message C2R_LoginRequest_10001 // IRequest
 	required string	Account	 = 1;	// 帐号
 	required string	Password = 2;	// 密码
 	required string Channel = 3;	//渠道
+    required string Platform = 4;   //平台
 }
 
 message R2C_LoginResponse_10002 // IResponse

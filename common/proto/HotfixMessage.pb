@@ -1,5 +1,5 @@
 
-≠Ù
+ Ù
 HotfixMessage.proto"
 C2G_PingRequest_10201"2
 G2C_PongResponse_10202
@@ -13,11 +13,12 @@
 C2GM_ReloadRequest_10207"
 GM2C_ReloadResponse_10208".
 G2M_Ping_10209
-	AccountId (R	AccountId"h
+	AccountId (R	AccountId"Ñ
 C2R_LoginRequest_10001
 Account (	RAccount
 Password (	RPassword
-Channel (	RChannel"{
+Channel (	RChannel
+Platform (	RPlatform"{
 R2C_LoginResponse_10002
 	IPAddress (	R	IPAddress
 Port (RPort
