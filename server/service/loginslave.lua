@@ -2,17 +2,17 @@ local skynet = require "skynet"
 local socket = require "socket"
 
 local syslog = require "syslog"
-local protoloader = require "protoloader"
 local srp = require "srp"
 local aes = require "aes"
 local uuid = require "uuid"
+local protobuf = require "protobuf"
+local protocolId2Name, protocolName2Id = require "proto.protocol"
 
 local traceback = debug.traceback
 
 
 local master
 local database
-local host
 local auth_timeout
 local session_expire_time
 local session_expire_time_in_second
@@ -26,10 +26,10 @@ local CMD = {}
 function CMD.init (m, id, conf)
 	master = m
 	database = skynet.uniqueservice ("database")
-	host = protoloader.load (protoloader.LOGIN)
 	auth_timeout = conf.auth_timeout * 100
 	session_expire_time = conf.session_expire_time * 100
 	session_expire_time_in_second = conf.session_expire_time
+    protobuf.register_file("../common/proto/HotfixMessage.pb")
 end
 
 local function close (fd)
@@ -47,12 +47,23 @@ local function read_msg (fd)
 	local s = read (fd, 2)
 	local size = s:byte(1) * 256 + s:byte(2)
 	local msg = read (fd, size)
-	return host:dispatch (msg, size)
+	local protocol_id, buf = string.unpack(">Hs2", msg)
+    local protocal_name = protocolId2Name[protocol_id]
+    assert(protocal_name ~= nil)
+    local args = protobuf.decode(protocal_name, buf)
+    return protocol_id, args, protocal_name
 end
 
-local function send_msg (fd, msg)
-	local package = string.pack (">s2", msg)
-	socket.write (fd, package)
+local function send_msg (fd, protocol_id, msg)
+	--local package = string.pack (">s2", msg)
+	--socket.write (fd, package)
+   
+    local protocal_name = protocolId2Name[protocol_id]
+    assert(protocal_name ~= nil)
+    local buf = protobuf.encode(protocal_name, msg)
+    local len = 2 + 2 + #buf
+    local package = string.pack(">HHs2", len, protocol_id, buf)
+    socket.write(fd, package)
 end
 
 function CMD.auth (fd, addr)
@@ -67,63 +78,22 @@ function CMD.auth (fd, addr)
 	socket.start (fd)
 	socket.limit (fd, 8192)
 
-	local type, name, args, response = read_msg (fd)
-	assert (type == "REQUEST")
+	local protocol_id, args = read_msg (fd)
 
-	if name == "handshake" then
-		assert (args and args.name and args.client_pub, "invalid handshake request")
+	if 10001 == protocol_id then
+		assert (args and args.Account and args.Password and args.Channel and args.Platform, "invalid login request")
 
-		local account = skynet.call (database, "lua", "account", "load", args.name) or error ("load account " .. args.name .. " failed")
-
-		local session_key, _, pkey = srp.create_server_session_key (account.verifier, args.client_pub)
-		local challenge = srp.random ()
-		local msg = response {
-					user_exists = (account.id ~= nil),
-					salt = account.salt,
-					server_pub = pkey,
-					challenge = challenge,
-				}
-		send_msg (fd, msg)
-
-		type, name, args, response = read_msg (fd)
-		assert (type == "REQUEST" and name == "auth" and args and args.challenge, "invalid auth request")
-
-		local text = aes.decrypt (args.challenge, session_key)
-		assert (challenge == text, "auth challenge failed")
-
-		local id = tonumber (account.id)
-		if not id then
-			assert (args.password)
-			id = uuid.gen ()
-			local password = aes.decrypt (args.password, session_key)
-			account.id = skynet.call (database, "lua", "account", "create", id, account.name, password) or error (string.format ("create account %s/%d failed", args.name, id))
-		end
-		
-		challenge = srp.random ()
-		local session = skynet.call (master, "lua", "save_session", id, session_key, challenge)
-
-		msg = response {
-				session = session,
-				expire = session_expire_time_in_second,
-				challenge = challenge,
-			}
-		send_msg (fd, msg)
-		
-		type, name, args, response = read_msg (fd)
-		assert (type == "REQUEST")
+        local account = skynet.call (database, "lua", "account", "load", args.Account, args.Password, args.Channel, args.Platform) or error ("load account " .. args.Account .. " failed")
+		if account.account_id then
+            skynet.error("account.account_id=", account.account_id)
+            local msg = {IPAddress = "127.0.0.1", Port = 9999, Key = "Arhuz2fnd5"}
+            send_msg (fd, 10002, msg)
+        else
+            local msg = {ErrorCode = 1}
+            send_msg (fd, 10002, msg)
+            skynet.error("login failed!")
+        end
 	end
-
-	assert (name == "challenge")
-	assert (args and args.session and args.challenge)
-
-	local token, challenge = skynet.call (master, "lua", "challenge", args.session, args.challenge)
-	assert (token and challenge)
-
-	local msg = response {
-			token = token,
-			challenge = challenge,
-	}
-	send_msg (fd, msg)
 
 	close (fd)
 end
